@@ -1,0 +1,18 @@
+{
+  "base_url": "https://api.binance.com",
+  "symbols": ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT"],
+  "check_interval_seconds": 60,
+  "change_threshold_percent": 3.0,
+  "cooldown_minutes": 30,
+  "price_alert_mode": "cruzamento",
+  "price_targets": {
+    "BTCUSDT": { "above": 65000, "below": 55000 },
+    "ETHUSDT": { "above": 2000, "below": 1500 }
+  },
+  "daily_summary_time": "09:00",
+  "enable_commands": true,
+  "database_path": "bot.db",
+  "history_retention_days": 30,
+  "request_timeout_seconds": 10,
+  "max_retries": 5
+}
