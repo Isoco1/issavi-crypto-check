@@ -73,7 +73,7 @@ def load_config(path: str = CONFIG_PATH) -> dict:
 
 def parse_args() -> argparse.Namespace:
     """Lê as opções da linha de comando."""
-    parser = argparse.ArgumentParser(description="Bot de alertas do mercado cripto.")
+    parser = argparse.ArgumentParser(description="Issavi Crypto Check: bot de alertas do mercado cripto.")
     parser.add_argument("--once", action="store_true",
                         help="faz uma única verificação e encerra")
     parser.add_argument("--test-summary", action="store_true",

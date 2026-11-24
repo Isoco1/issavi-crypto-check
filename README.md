@@ -1,4 +1,4 @@
-# Binance Alert Bot
+# Issavi Crypto Check
 
 Bot em Python que monitora o mercado de criptomoedas pela **API pública da
 Binance** e envia alertas, resumos e gráficos pelo **Telegram**.
