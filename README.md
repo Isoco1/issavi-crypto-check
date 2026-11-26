@@ -1,78 +1,80 @@
 # Issavi Crypto Check
 
-🇺🇸 [Read in English](README.en.md)
+🇧🇷 [Leia em português](README.PT.md)
 
-Bot em Python que monitora o mercado de criptomoedas pela **API pública da
-Binance** e envia alertas, resumos e gráficos pelo **Telegram**.
+Python bot that monitors the crypto market through the **Binance public API**
+and sends alerts, summaries and charts via **Telegram**.
 
-> Só lê dados públicos de mercado: não usa chave de API e não tem nenhuma
-> função de compra, venda ou acesso a conta.
+> Read-only access to public market data: no API key, and no buy, sell or
+> account functions of any kind.
 
 <p align="center">
-  <img src="docs/telegram.png" alt="Bot respondendo no Telegram com resumo, gráfico e /status" width="800">
+  <img src="docs/telegram.png" alt="Bot replying on Telegram with a summary, a chart and /status" width="800">
 </p>
 
-## Funcionalidades
+## Features
 
-- **Alerta de variação:** avisa quando a variação de 24h passa de ±3% (configurável).
-- **Alerta de preço-alvo:** avisa quando o preço cruza um valor definido, para cima ou para baixo.
-- **Cooldown:** não repete o mesmo alerta por 30 minutos, mesmo após reiniciar o bot.
-- **Resumo diário:** preço, variação e volume de cada moeda, com gráfico comparativo das últimas 24h.
-- **Comandos no Telegram:** `/preco`, `/grafico`, `/status` e `/ajuda`, respondidos na hora e só para o chat autorizado.
-- **Histórico em SQLite:** preços e alertas enviados ficam salvos localmente.
+- **Price change alert:** notifies when the 24h change exceeds ±3% (configurable).
+- **Price target alert:** notifies when the price crosses a set value, upward or downward.
+- **Cooldown:** the same alert is not repeated for 30 minutes, even after a restart.
+- **Daily summary:** price, change and volume for each coin, with a 24h comparison chart.
+- **Telegram commands:** `/preco` (price), `/grafico` (chart), `/status` and `/ajuda` (help), answered instantly and only for the authorized chat.
+- **SQLite history:** prices and sent alerts are stored locally.
 
-## Tecnologias
+> The bot's messages and commands are in Portuguese.
+
+## Tech stack
 
 | | |
 |---|---|
 | **Python 3** | `requests`, `python-dotenv`, `logging`, `sqlite3`, `argparse` |
-| **API pública da Binance** | `/api/v3/ticker/24hr` e `/api/v3/klines` |
-| **Telegram Bot API** | `sendMessage`, `sendPhoto` e `getUpdates` (long polling) |
-| **matplotlib** | Gráficos gerados em memória e enviados como imagem |
-| **pytest** | 43 testes com dados simulados, sem acesso à rede |
+| **Binance public API** | `/api/v3/ticker/24hr` and `/api/v3/klines` |
+| **Telegram Bot API** | `sendMessage`, `sendPhoto` and `getUpdates` (long polling) |
+| **matplotlib** | Charts rendered in memory and sent as images |
+| **pytest** | 43 tests with simulated data, no network access |
 
-## Destaques técnicos
+## Technical highlights
 
-- **Resiliência:** timeout em toda requisição e novas tentativas com espera crescente (1s, 2s, 4s…). O bot respeita o `Retry-After` da Binance (HTTP 429/418) e não repete erros 4xx, que não se resolvem tentando de novo. Uma falha temporária nunca derruba o bot.
-- **Uso eficiente da API:** todas as moedas são consultadas numa única requisição, com intervalo configurável (padrão de 60s).
-- **Comandos sem threads:** o tempo entre uma verificação e outra é usado para escutar o Telegram, então o bot responde na hora com um único fluxo de execução.
-- **Lógica testável:** as regras de alerta não acessam rede nem banco, e o horário é passado como parâmetro para os testes simularem a passagem do tempo.
-- **Segurança:** token e chat_id ficam no `.env` (fora do Git), o token nunca vai para o log, o bot só responde ao chat configurado e o SQL usa consultas parametrizadas.
+- **Resilience:** every request has a timeout, and failed requests are retried with exponential backoff (1s, 2s, 4s…). The bot honors Binance's `Retry-After` (HTTP 429/418) and does not retry 4xx errors, since retrying won't fix them. A temporary failure never stops the bot.
+- **Efficient API usage:** all coins are fetched in a single request, at a configurable interval (60s by default).
+- **Commands without threads:** the time between checks is spent listening to Telegram, so the bot replies instantly with a single flow of execution.
+- **Testable logic:** alert rules never touch the network or the database, and the current time is passed as a parameter so tests can simulate time passing.
+- **Security:** the token and chat_id live in `.env` (kept out of Git), the token is never logged, the bot only answers the configured chat, and SQL uses parameterized queries.
 
-## Como rodar
+## Getting started
 
 ```powershell
 python -m venv venv
 venv\Scripts\activate
 pip install -r requirements.txt
-copy .env.example .env      # preencha TELEGRAM_BOT_TOKEN e TELEGRAM_CHAT_ID
-python main.py              # roda continuamente
+copy .env.example .env      # fill in TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID
+python main.py              # runs continuously
 ```
 
-| Comando | Uso |
+| Command | Purpose |
 |---|---|
-| `python main.py --once` | Faz uma verificação e encerra |
-| `python main.py --test-summary` | Envia o resumo diário agora |
-| `python -m pytest` | Roda os testes |
+| `python main.py --once` | Runs a single check and exits |
+| `python main.py --test-summary` | Sends the daily summary now |
+| `python -m pytest` | Runs the tests |
 
-Moedas, limites, preços-alvo e horário do resumo ficam no [`config.json`](config.json).
-Se `api.binance.com` estiver bloqueado na sua rede, troque `base_url` para
-`https://data-api.binance.vision`.
+Coins, thresholds, price targets and the summary time are set in
+[`config.json`](config.json). If `api.binance.com` is blocked on your network,
+set `base_url` to `https://data-api.binance.vision`.
 
-**Telegram:** crie o bot com o [@BotFather](https://t.me/BotFather), mande uma
-mensagem para ele e pegue o `chat.id` em
-`https://api.telegram.org/bot<TOKEN>/getUpdates`. Cuidado para não copiar o
-`update_id` no lugar dele.
+**Telegram:** create the bot with [@BotFather](https://t.me/BotFather), send it
+a message, then get the `chat.id` from
+`https://api.telegram.org/bot<TOKEN>/getUpdates`. Be careful not to copy the
+`update_id` instead.
 
-## Estrutura
+## Project structure
 
 ```
-main.py            loop principal, resumo diário, logs
-binance_client.py  API pública da Binance (com retry)
-alerts.py          regras de alerta e cooldown
-telegram_bot.py    mensagens, fotos e leitura de comandos
+main.py            main loop, daily summary, logging
+binance_client.py  Binance public API (with retry)
+alerts.py          alert rules and cooldown
+telegram_bot.py    messages, photos and command polling
 commands.py        /preco, /grafico, /status, /ajuda
-storage.py         histórico em SQLite
-charts.py          gráficos com matplotlib
-tests/             testes com pytest
+storage.py         SQLite history
+charts.py          matplotlib charts
+tests/             pytest tests
 ```
